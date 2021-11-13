@@ -1,7 +1,6 @@
 //import * as React from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 //import styles from './App.css';
-
 import {
   BrowserRouter,
   Switch,
