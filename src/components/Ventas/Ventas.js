@@ -308,6 +308,7 @@ const Ventas = () => {
               </tr>
             </thead>
 
+
             <tbody>
               {venta.data.map((dato) => (
                 <tr key={dato._id}>
