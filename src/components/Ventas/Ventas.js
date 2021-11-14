@@ -63,10 +63,10 @@ const Ventas = () => {
         },
       };
       fetch(`${BASE_URL}${PATH_SALES}`, requestOptions)
-        .then(res => res.json())
-        .then(
-          (result) => {
-            //setIsLoaded(true);
+      .then(res => res.json())
+      .then(
+        (result) => {
+          //setIsLoaded(true);
             setVenta({
               ...venta,
               data: result
