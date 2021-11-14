@@ -324,7 +324,7 @@ const Ventas = () => {
                   <td>
                     <Button id={dato._id} color="primary" onClick={mostrarModalActualizar}>Editar</Button>{" "}
                     <Button id={dato._id} color="danger" onClick={eliminar}>Eliminar</Button>
-                  </td>
+                    </td>
                 </tr>
               ))}
             </tbody>
