@@ -396,7 +396,7 @@ const Productos = () => {
         </ModalBody>
 
         <ModalFooter>
-          <Button color="danger" onClick={eliminar1}>Eliminar</Button>
+        <Button color="danger" onClick={eliminar1}>Eliminar</Button>
           <Button
             color="primary"
             onClick={editar}
