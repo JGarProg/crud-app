@@ -18,6 +18,7 @@ import {
 } from "reactstrap";
 import Tablero from '../Tablero';
 
+
 const data = [];
 const BASE_URL = process.env.REACT_APP_API_BASE_URL;
 const PATH_SALES = process.env.REACT_APP_API_SALES_PATH;
@@ -43,7 +44,7 @@ const Ventas = () => {
       Producto: "",
       Precio: "",
       Cantidad: "",
-      Valor: ""       
+      Valor: ""         
     }
   });
 
@@ -63,10 +64,10 @@ const Ventas = () => {
         },
       };
       fetch(`${BASE_URL}${PATH_SALES}`, requestOptions)
-      .then(res => res.json())
-      .then(
-        (result) => {
-          //setIsLoaded(true);
+        .then(res => res.json())
+        .then(
+          (result) => {
+            //setIsLoaded(true);
             setVenta({
               ...venta,
               data: result
@@ -208,9 +209,9 @@ const Ventas = () => {
 
   const mostrarModalBuscar = () => {
     let arregloVentas = venta.data;
-    let dbven = document.getElementById('buscar').value;
+    let db = document.getElementById('buscar').value;
     let saleToModify;
-    let Factura = dbven;
+    let Factura = db;
     user.getIdToken(true).then(token => {
       const requestOptions = {
         method: 'GET',
@@ -224,7 +225,7 @@ const Ventas = () => {
         .then(
           (result) => {
             arregloVentas.map((registro) => {
-              if (dbven === registro.Factura) {
+              if (db === registro.Factura) {
                 saleToModify = registro;             
                 setVenta({
                   ...venta,
@@ -246,9 +247,9 @@ const Ventas = () => {
 
   const eliminar1 = () => {
     let arregloVentas = venta.data;
-    let dbven = document.getElementById('buscar').value;
+    let db = document.getElementById('buscar').value;
     arregloVentas.map((registro) => {
-      if (dbven === registro.Factura) {
+      if (db === registro.Factura) {
         let opcion = window.confirm("¿Está seguro que desea eliminar la Factura " + registro.Factura + "?");
         if (opcion) {
           borrar(registro._id);
@@ -269,34 +270,34 @@ const Ventas = () => {
       </div>
     );
   } else {
-    return (
-      <>
-        <Tablero/>
-        <div Class='tit m-3'>
-          <h1>Ventas</h1>
-        </div> 
-        <Container>          
-          <br />
-          <div class="container">
-            <div class="row">
-              <div class="col-sm">
-                <Button color="success" onClick={mostrarModalInsertar}>Crear</Button>
-              </div>
-              <div class="col-sm">
-              </div>
-              <div class="col-sm">
-                <InputGroup>
-                  <Button onClick={mostrarModalBuscar}>Buscar</Button>
-                  <Input placeholder="Factura.." name="buscar" id="buscar" type="text" />
-                </InputGroup>
-              </div>
+  return (
+    <>
+      <Tablero/>
+      <div Class='tit m-3'>
+        <h1>Ventas</h1>
+      </div> 
+      <Container>
+        <br />
+        <div class="container">
+          <div class="row">
+            <div class="col-sm">
+              <Button color="success" onClick={mostrarModalInsertar}>Crear</Button>
+            </div>
+            <div class="col-sm">
+            </div>
+            <div class="col-sm">
+              <InputGroup>
+                <Button onClick={mostrarModalBuscar}>Buscar</Button>
+                <Input placeholder="Id_Producto.." name="buscar" id="buscar" type="text" />
+              </InputGroup>
             </div>
           </div>
-          <br />
-          <Table>
-            <thead>
-              <tr>
-                <th>Fecha</th>
+        </div>
+        <br />
+        <Table>
+          <thead>
+            <tr>
+            <th>Fecha</th>
                 <th>Factura</th>
                 <th>Vendedor</th>
                 <th>Id_Cliente</th>
@@ -305,13 +306,12 @@ const Ventas = () => {
                 <th>Precio</th>
                 <th>Cantidad</th>
                 <th>Valor</th>
-              </tr>
-            </thead>
+            </tr>
+          </thead>
 
-
-            <tbody>
-              {venta.data.map((dato) => (
-                <tr key={dato._id}>
+          <tbody>
+            {venta.data.map((dato) => (
+              <tr key={dato._id}>
                   <td>{dato.Fecha}</td>
                   <td>{dato.Factura}</td>
                   <td>{dato.Vendedor}</td>
@@ -321,299 +321,300 @@ const Ventas = () => {
                   <td>{dato.Precio}</td>
                   <td>{dato.Cantidad}</td>
                   <td>{dato.Valor}</td>
-                  <td>
-                    <Button id={dato._id} color="primary" onClick={mostrarModalActualizar}>Editar</Button>{" "}
-                    <Button id={dato._id} color="danger" onClick={eliminar}>Eliminar</Button>
-                    </td>
-                </tr>
-              ))}
-            </tbody>
-          </Table>
-        </Container>
+                <td>
+                  <Button id={dato._id} color="primary" onClick={mostrarModalActualizar}>Editar</Button>{" "}
+                  <Button id={dato._id} color="danger" onClick={eliminar}>Eliminar</Button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </Table>
+      </Container>
 
-        <Modal isOpen={modalActualizar}>
-          <ModalHeader>
-            <div><h3>Actualizar Venta {venta.form.Factura}</h3></div>
-          </ModalHeader>
+      <Modal isOpen={modalActualizar}>
+        <ModalHeader>
+          <div><h3>Actualizar Producto {venta.form.Producto}</h3></div>
+        </ModalHeader>
 
-          <ModalBody>
-            <FormGroup>
-              <label>
+        <ModalBody>
+
+          <FormGroup>
+            <label>
               Fecha:
-              </label>
-              <input
-                className="form-control"
-                name="Fecha"
-                type="text"
-                onChange={handleChange}
-                value={venta.form.Fecha}
-                required
-              />
-            </FormGroup>
+            </label>
+            <input
+              className="form-control"
+              name="Fecha"
+              type="text"
+              onChange={handleChange}
+              value={venta.form.Fecha}
+              required
+            />
+          </FormGroup>
 
-            <FormGroup>
-              <label>
+          <FormGroup>
+            <label>
               Factura:
-              </label>
-              <input
-                className="form-control"
-                name="Factura"
-                type="text"
-                onChange={handleChange}
-                value={venta.form.Factura}
-                required
-                readOnly
-              />
-            </FormGroup>
+            </label>
+            <input
+              className="form-control"
+              name="Factura"
+              type="text"
+              onChange={handleChange}
+              value={venta.form.Factura}
+              required
+              readOnly
+            />
+          </FormGroup>
 
-            <FormGroup>
-              <label>
-              Vendedor:
-              </label>
-              <input
-                className="form-control"
-                name="Vendedor"
-                type="text"
-                onChange={handleChange}
-                value={venta.form.Vendedor}
-                required
-              />
-            </FormGroup>
+          <FormGroup>
+            <label>
+            Vendedor:
+            </label>
+            <input
+              className="form-control"
+              name="Vendedor"
+              type="text"
+              onChange={handleChange}
+              value={venta.form.Vendedor}
+              required
+            />
+          </FormGroup>
 
-            <FormGroup>
-              <label>
-              Id_Cliente:
-              </label>
-              <input
-                className="form-control"
-                name="Id_Cliente"
-                type="text"
-                onChange={handleChange}
-                value={venta.form.Id_Cliente}
-                required
-              />
-            </FormGroup>
+          <FormGroup>
+            <label>
+            Id_Cliente:
+            </label>
+            <input
+              className="form-control"
+              name="Id_Cliente"
+              type="text"
+              onChange={handleChange}
+              value={venta.form.Id_Cliente}
+              required
+            />
+          </FormGroup>
 
-            <FormGroup>
-              <label>
-              Cliente:
-              </label>
-              <input
-                className="form-control"
-                name="Cliente"
-                type="text"
-                onChange={handleChange}
-                value={venta.form.Cliente}
-                required
-              />
-            </FormGroup>
+          <FormGroup>
+            <label>
+            Cliente:
+            </label>
+            <input
+              className="form-control"
+              name="Cliente"
+              type="text"
+              onChange={handleChange}
+              value={venta.form.Cliente}
+              required
+            />
+          </FormGroup>
 
-            <FormGroup>
-              <label>
-              Producto:
-              </label>
-              <input
-                className="form-control"
-                name="Producto"
-                type="text"
-                onChange={handleChange}
-                value={venta.form.Producto}
-                required
-              />
-            </FormGroup>
+          <FormGroup>
+            <label>
+            Producto:
+            </label>
+            <input
+              className="form-control"
+              name="Producto"
+              type="text"
+              onChange={handleChange}
+              value={venta.form.Producto}
+              required
+            />
+          </FormGroup>
 
-            <FormGroup>
-              <label>
-              Precio:
-              </label>
-              <input
-                className="form-control"
-                name="Precio"
-                type="text"
-                onChange={handleChange}
-                value={venta.form.Precio}
-                required
-              />
-            </FormGroup>
+          <FormGroup>
+            <label>
+            Precio:
+            </label>
+            <input
+              className="form-control"
+              name="Precio"
+              type="text"
+              onChange={handleChange}
+              value={venta.form.Precio}
+              required
+            />
+          </FormGroup>
 
-            <FormGroup>
-              <label>
-              Cantidad:
-              </label>
-              <input
-                className="form-control"
-                name="Cantidad"
-                type="text"
-                onChange={handleChange}
-                value={venta.form.Cantidad}
-                required
-              />
-            </FormGroup>
+          <FormGroup>
+            <label>
+            Cantidad:
+            </label>
+            <input
+              className="form-control"
+              name="Cantidad"
+              type="text"
+              onChange={handleChange}
+              value={venta.form.Cantidad}
+              required
+            />
+          </FormGroup>
 
-            <FormGroup>
-              <label>
-              Valor:
-              </label>
-              <input
-                className="form-control"
-                name="Valor"
-                type="text"
-                onChange={handleChange}
-                value={venta.form.Valor}
-                required
-              />
-            </FormGroup>
-          </ModalBody>
+          <FormGroup>
+            <label>
+            Valor:
+            </label>
+            <input
+              className="form-control"
+              name="Valor"
+              type="text"
+              onChange={handleChange}
+              value={venta.form.Valor}
+            />
+          </FormGroup>
+        </ModalBody>
 
-          <ModalFooter>
-            <Button color="danger" onClick={eliminar1}>Eliminar</Button>
-            <Button
-              color="primary"
-              onClick={editar}
-            >
-              Actualizar
-            </Button>
-            <Button
-              className="btn btn-danger"
-              onClick={cerrarModalActualizar}
-            >
-              Cancelar
-            </Button>
-          </ModalFooter>
-        </Modal>
-
+        <ModalFooter>
+        <Button color="danger" onClick={eliminar1}>Eliminar</Button>
+          <Button
+            color="primary"
+            onClick={editar}
+          >
+            Actualizar
+          </Button>
+          <Button
+            className="btn btn-danger"
+            onClick={cerrarModalActualizar}
+          >
+            Cancelar
+          </Button>
+        </ModalFooter>
+      </Modal>
 
 
-        <Modal isOpen={modalInsertar}>
-          <ModalHeader>
-            <div><h3>Insertar Venta</h3></div>
-          </ModalHeader>
 
-          <ModalBody>
-            <FormGroup>
-              <label>
-              Fecha:
-              </label>
-              <input
-                className="form-control"
-                name="Fecha"
-                type="text"
-                onChange={handleChange}
-                required
-              />
-            </FormGroup>
+      <Modal isOpen={modalInsertar}>
+        <ModalHeader>
+          <div><h3>Insertar Venta</h3></div>
+        </ModalHeader>
 
-            <FormGroup>
-              <label>
-              Factura:
-              </label>
-              <input
-                className="form-control"
-                name="Factura"
-                type="text"
-                onChange={handleChange}
-                required
-              />
-            </FormGroup>
+        <ModalBody>
+          <FormGroup>
+            <label>
+            Fecha:
+            </label>
+            <input
+              className="form-control"
+              name="Fecha"
+              type="text"
+              onChange={handleChange}
+              required
+            />
+          </FormGroup>
 
-            <FormGroup>
-              <label>
-              Vendedor:
-              </label>
-              <input
-                className="form-control"
-                name="Vendedor"
-                type="text"
-                onChange={handleChange}
-                required
-              />
-            </FormGroup>
+          <FormGroup>
+            <label>
+            Factura:
+            </label>
+            <input
+              className="form-control"
+              name="Factura"
+              type="text"
+              onChange={handleChange}
+              required
+            />
+          </FormGroup>
 
-            <FormGroup>
-              <label>
-              Id_Cliente:
-              </label>
-              <input
-                className="form-control"
-                name="Id_Cliente"
-                type="text"
-                onChange={handleChange}
-                required
-              />
-            </FormGroup>
+          <FormGroup>
+            <label>
+            Vendedor:
+            </label>
+            <input
+              className="form-control"
+              name="Vendedor"
+              type="text"
+              onChange={handleChange}
+              required
+            />
+          </FormGroup>
 
-            <FormGroup>
-              <label>
-              Cliente:
-              </label>
-              <input
-                className="form-control"
-                name="Cliente"
-                type="text"
-                onChange={handleChange}
-                required
-              />
-            </FormGroup>
+          <FormGroup>
+            <label>
+            Id_Cliente:
+            </label>
+            <input
+              className="form-control"
+              name="Id_Cliente"
+              type="text"
+              onChange={handleChange}
+              required
+            />
+          </FormGroup>
 
-            <FormGroup>
-              <label>
-              Producto:
-              </label>
-              <input
-                className="form-control"
-                name="Producto"
-                type="text"
-                onChange={handleChange}
-                required
-              />
-            </FormGroup>
+          <FormGroup>
+            <label>
+            Cliente:
+            </label>
+            <input
+              className="form-control"
+              name="Cliente"
+              type="text"
+              onChange={handleChange}
+              required
+            />
+          </FormGroup>
 
-            <FormGroup>
-              <label>
-              Precio:
-              </label>
-              <input
-                className="form-control"
-                name="Precio"
-                type="text"
-                onChange={handleChange}
-                required
-              />
-            </FormGroup>
+          <FormGroup>
+            <label>
+            Producto:
+            </label>
+            <input
+              className="form-control"
+              name="Producto"
+              type="text"
+              onChange={handleChange}
+              required
+            />
+          </FormGroup>
 
-            <FormGroup>
-              <label>
-              Cantidad:
-              </label>
-              <input
-                className="form-control"
-                name="Cantidad"
-                type="text"
-                onChange={handleChange}
-                required
-              />
-            </FormGroup>
+          <FormGroup>
+            <label>
+            Precio:
+            </label>
+            <input
+              className="form-control"
+              name="Precio"
+              type="text"
+              onChange={handleChange}
+              
+            />
+          </FormGroup>
 
-            <FormGroup>
-              <label>
-              Valor:
-              </label>
-              <input
-                className="form-control"
-                name="Valor"
-                type="text"
-                onChange={handleChange}
-              />
-            </FormGroup>
-          </ModalBody>
+          <FormGroup>
+            <label>
+            Cantidad:
+            </label>
+            <input
+              className="form-control"
+              name="Cantidad"
+              type="text"
+              onChange={handleChange}
+              required
+            />
+          </FormGroup>
 
-          <ModalFooter>
-            <Button color="primary" onClick={insertar}>Insertar</Button>
-            <Button className="btn btn-danger" onClick={cerrarModalInsertar}>Cancelar</Button>
-          </ModalFooter>
-        </Modal>
-      </>
-    );
+          <FormGroup>
+            <label>
+            Valor:
+            </label>
+            <input
+              className="form-control"
+              name="Valor"
+              type="text"
+              onChange={handleChange}
+              required
+            />
+          </FormGroup>
+        </ModalBody>
+
+        <ModalFooter>
+          <Button color="primary" onClick={insertar}>Insertar</Button>
+          <Button className="btn btn-danger" onClick={cerrarModalInsertar}>Cancelar</Button>
+        </ModalFooter>
+      </Modal>
+    </>
+  );
   }
 }
 export default Ventas;
