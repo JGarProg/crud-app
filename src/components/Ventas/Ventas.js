@@ -5,6 +5,8 @@ import { getAuth, GoogleAuthProvider, signInWithEmailAndPassword, signInWithPopu
 
 import {
   Table,
+  Input,
+  InputGroup,
   Button,
   Container,
   Modal,
@@ -12,17 +14,15 @@ import {
   ModalBody,
   FormGroup,
   ModalFooter,
+  Alert
 } from "reactstrap";
 import Tablero from '../Tablero';
 
-const data = [
-];
-
+const data = [];
 const BASE_URL = process.env.REACT_APP_API_BASE_URL;
 const PATH_SALES = process.env.REACT_APP_API_SALES_PATH;
 
 const Ventas = () => {
-
   const auth = getAuth();
   const [modalActualizar, setModalActualizar] = React.useState(false);
   const [modalInsertar, setModalInsertar] = React.useState(false);
@@ -31,76 +31,52 @@ const Ventas = () => {
   const [user, loading, error] = useAuthState(auth);
   const history = useHistory();
 
-
   const [venta, setVenta] = React.useState({
     data: data,
     form: {
-      Factura: "",
+      //id: "",
       Fecha: "",
-      Producto: "",
-      Cantidad: "",
-      Precio: "",
-      Valor: "",
+      Factura: "",
+      Vendedor: "",
       Id_Cliente: "",
       Cliente: "",
-      Vendedor: ""
-
+      Producto: "",
+      Precio: "",
+      Cantidad: "",
+      Valor: ""       
     }
   });
-
-
-  //React.useEffect(() => {
-  //if (loading) return;
-  //if (!user) return history.replace("/");
-  //}, [user, loading]);
-  //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-
-
-  //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-
-
-
-
-
-
-
 
   React.useEffect(() => {
     if (loading) return;
     if (!user) return history.replace("/");
   }, [user, loading]);
 
-
-
-
   React.useEffect(() => {
     if (!user) return history.replace("/");
     user.getIdToken(true).then(token => {
-
-    const requestOptions = {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
-
-      },
-    };
-
-    fetch(`${BASE_URL}${PATH_SALES}`, requestOptions)
-      .then(res => res.json())
-      .then(
-        (result) => {
-          //setIsLoaded(true);
-          setVenta({
-            ...venta,
-            data: result
-          });
+      const requestOptions = {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
         },
-        (error) => {
-          //setIsLoaded(true);
-          //setErrors(error);
-        }
-      )
+      };
+      fetch(`${BASE_URL}${PATH_SALES}`, requestOptions)
+        .then(res => res.json())
+        .then(
+          (result) => {
+            //setIsLoaded(true);
+            setVenta({
+              ...venta,
+              data: result
+            });
+          },
+          (error) => {
+            //setIsLoaded(true);
+            setErrors(error);
+          }
+        )
     });
   }, [newVal]);
 
@@ -116,15 +92,15 @@ const Ventas = () => {
 
   const mostrarModalActualizar = (e) => {
     let arregloVentas = venta.data;
-    let userToModify;
+    let saleToModify;
     arregloVentas.map((registro) => {
       if (e.target.id === registro._id) {
-        userToModify = registro;
+        saleToModify = registro;
       }
     });
     setVenta({
       ...venta,
-      form: userToModify
+      form: saleToModify
     });
     setModalActualizar(true);
   };
@@ -143,18 +119,17 @@ const Ventas = () => {
 
   const editar = () => {
     let ventaAModificar = { ...venta.form };
-    actualizarVenta(ventaAModificar);
+    actualizar(ventaAModificar);
     setModalActualizar(false);
-    setNewVal(newVal + 1);
   };
 
   const eliminar = (e) => {
     let arregloVentas = venta.data;
     arregloVentas.map((registro) => {
       if (e.target.id === registro._id) {
-        let opcion = window.confirm("¿Está seguro que desea eliminar la venta " + registro.Factura + "?");
+        let opcion = window.confirm("¿Está seguro que desea eliminar la Factura " + registro.Factura + "?");
         if (opcion) {
-          borrarVenta(registro._id);
+          borrar(registro._id);
         }
       }
     });
@@ -163,12 +138,12 @@ const Ventas = () => {
 
   const insertar = () => {
     let ventaACrear = { ...venta.form };
-
+    user.getIdToken(true).then(token => {
     const requestOptions = {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-
+        Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify(ventaACrear)
     };
@@ -181,16 +156,18 @@ const Ventas = () => {
         (error) => {
           //setIsLoaded(true);
           setErrors(error);
-        })
+      })
+    });
     setModalInsertar(false);
-  }
+  };
 
-  const borrarVenta = (id) => {
-
+  const borrar = (id) => {
+    user.getIdToken(true).then(token => {
     const requestOptions = {
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
       },
     };
     fetch(`${BASE_URL}${PATH_SALES}/${id}`, requestOptions)
@@ -203,19 +180,20 @@ const Ventas = () => {
           console.log(error);
         }
       );
+    });
   }
 
-  const actualizarVenta = (venta) => {
-
+  const actualizar = (sale) => {
+    user.getIdToken(true).then(token => {
     const requestOptions = {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
-
+        Authorization: `Bearer ${token}`,
       },
-      body: JSON.stringify(venta)
+      body: JSON.stringify(sale)
     };
-    fetch(`${BASE_URL}${PATH_SALES}/${venta._id}`, requestOptions)
+    fetch(`${BASE_URL}${PATH_SALES}/${sale._id}`, requestOptions)
       .then(result => result.json())
       .then(
         (result) => {
@@ -225,315 +203,416 @@ const Ventas = () => {
           console.log(error);
         }
       );
+    });
   }
 
-  return (
+  const mostrarModalBuscar = () => {
+    let arregloVentas = venta.data;
+    let dbven = document.getElementById('buscar').value;
+    let saleToModify;
+    let Factura = dbven;
+    user.getIdToken(true).then(token => {
+      const requestOptions = {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      };
+      fetch(`${BASE_URL}${PATH_SALES}/${Factura}`, requestOptions)
+        .then(res => res.json())
+        .then(
+          (result) => {
+            arregloVentas.map((registro) => {
+              if (dbven === registro.Factura) {
+                saleToModify = registro;             
+                setVenta({
+                  ...venta,
+                  form: saleToModify
+                });
+                setModalActualizar(true);
+              //}else{
+                //console.log(error);
+                //let opcion = window.alert("La factura " + dbven + " no se encuentra");
+              }
+            });
+          },          
+          (error) => {
+            console.log(error);
+          }
+        );
+    });    
+  };
 
-    <>
-      <Tablero/>
-      <Container>
+  const eliminar1 = () => {
+    let arregloVentas = venta.data;
+    let dbven = document.getElementById('buscar').value;
+    arregloVentas.map((registro) => {
+      if (dbven === registro.Factura) {
+        let opcion = window.confirm("¿Está seguro que desea eliminar la Factura " + registro.Factura + "?");
+        if (opcion) {
+          borrar(registro._id);
+        }
+      }
+    });
+    setNewVal(newVal + 1);
+    setModalActualizar(false);
+  };
 
-        <br />
-        <Button color="success" onClick={mostrarModalInsertar}>Crear venta</Button>
-        <br />
-        <br />
-
-        <div>
-
+  if (!user) {
+    return (
+      <div className="No se encuentra Logueado">
+          <Alert color="info" className='text-center'>
+              No se encuentra Logueado <br />
+              <a href='/Login'>Ir a Inicio</a>
+          </Alert>
+      </div>
+    );
+  } else {
+    return (
+      <>
+        <Tablero/>
+        <div Class='tit m-3'>
+          <h1>Ventas</h1>
+        </div> 
+        <Container>          
+          <br />
+          <div class="container">
+            <div class="row">
+              <div class="col-sm">
+                <Button color="success" onClick={mostrarModalInsertar}>Crear</Button>
+              </div>
+              <div class="col-sm">
+              </div>
+              <div class="col-sm">
+                <InputGroup>
+                  <Button onClick={mostrarModalBuscar}>Buscar</Button>
+                  <Input placeholder="Factura.." name="buscar" id="buscar" type="text" />
+                </InputGroup>
+              </div>
+            </div>
+          </div>
+          <br />
           <Table>
-
             <thead>
               <tr>
-                <th>Venta</th>
                 <th>Fecha</th>
-                <th>Producto</th>
-                <th>Cantidad</th>
-                <th>Precio</th>
-                <th>Valor</th>
+                <th>Factura</th>
+                <th>Vendedor</th>
                 <th>Id_Cliente</th>
                 <th>Cliente</th>
-                <th>Vendedor</th>
-                <th>Acción</th>
+                <th>Producto</th>            
+                <th>Precio</th>
+                <th>Cantidad</th>
+                <th>Valor</th>
               </tr>
             </thead>
 
             <tbody>
-
               {venta.data.map((dato) => (
                 <tr key={dato._id}>
-                  <td>{dato.Factura}</td>
                   <td>{dato.Fecha}</td>
-                  <td>{dato.Producto}</td>
-                  <td>{dato.Cantidad}</td>
-                  <td>{dato.Precio}</td>
-                  <td>{dato.Valor}</td>
+                  <td>{dato.Factura}</td>
+                  <td>{dato.Vendedor}</td>
                   <td>{dato.Id_Cliente}</td>
                   <td>{dato.Cliente}</td>
-                  <td>{dato.Vendedor}</td>
+                  <td>{dato.Producto}</td>
+                  <td>{dato.Precio}</td>
+                  <td>{dato.Cantidad}</td>
+                  <td>{dato.Valor}</td>
                   <td>
-                    <button
-                      type="button"
-                      className="btn btn-primary btn-sm"
-                      id={dato._id}
-                      onClick={mostrarModalActualizar}>
-                      Editar
-                    </button>
-                    {"  "}
-                    <button
-                      type="button"
-                      className="btn btn-danger btn-sm"
-                      id={dato._id}
-                      onClick={eliminar}>
-                      Eliminar
-                    </button>
+                    <Button id={dato._id} color="primary" onClick={mostrarModalActualizar}>Editar</Button>{" "}
+                    <Button id={dato._id} color="danger" onClick={eliminar}>Eliminar</Button>
                   </td>
                 </tr>
               ))}
-
             </tbody>
-
           </Table>
-        </div>
+        </Container>
 
-      </Container>
+        <Modal isOpen={modalActualizar}>
+          <ModalHeader>
+            <div><h3>Actualizar Venta {venta.form.Factura}</h3></div>
+          </ModalHeader>
 
+          <ModalBody>
+            <FormGroup>
+              <label>
+              Fecha:
+              </label>
+              <input
+                className="form-control"
+                name="Fecha"
+                type="text"
+                onChange={handleChange}
+                value={venta.form.Fecha}
+                required
+              />
+            </FormGroup>
 
+            <FormGroup>
+              <label>
+              Factura:
+              </label>
+              <input
+                className="form-control"
+                name="Factura"
+                type="text"
+                onChange={handleChange}
+                value={venta.form.Factura}
+                required
+                readOnly
+              />
+            </FormGroup>
 
-      <Modal isOpen={modalActualizar}>
-        <ModalHeader>
-          <div><h3>Actualizar Venta</h3> {venta.form.Factura}</div>
-        </ModalHeader>
+            <FormGroup>
+              <label>
+              Vendedor:
+              </label>
+              <input
+                className="form-control"
+                name="Vendedor"
+                type="text"
+                onChange={handleChange}
+                value={venta.form.Vendedor}
+                required
+              />
+            </FormGroup>
 
-        <ModalBody>
+            <FormGroup>
+              <label>
+              Id_Cliente:
+              </label>
+              <input
+                className="form-control"
+                name="Id_Cliente"
+                type="text"
+                onChange={handleChange}
+                value={venta.form.Id_Cliente}
+                required
+              />
+            </FormGroup>
 
-          <FormGroup>
-            <label>Factura:</label>
-            <input
-              className="form-control"
-              name="Factura"
-              type="text"
-              onChange={handleChange}
-              value={venta.form.Factura}
-            />
-          </FormGroup>
+            <FormGroup>
+              <label>
+              Cliente:
+              </label>
+              <input
+                className="form-control"
+                name="Cliente"
+                type="text"
+                onChange={handleChange}
+                value={venta.form.Cliente}
+                required
+              />
+            </FormGroup>
 
-          <FormGroup>
-            <label>Fecha Venta:</label>
-            <input
-              className="form-control"
-              name="Fecha"
-              type="text"
-              onChange={handleChange}
-              value={venta.form.Fecha}
-            />
-          </FormGroup>
+            <FormGroup>
+              <label>
+              Producto:
+              </label>
+              <input
+                className="form-control"
+                name="Producto"
+                type="text"
+                onChange={handleChange}
+                value={venta.form.Producto}
+                required
+              />
+            </FormGroup>
 
+            <FormGroup>
+              <label>
+              Precio:
+              </label>
+              <input
+                className="form-control"
+                name="Precio"
+                type="text"
+                onChange={handleChange}
+                value={venta.form.Precio}
+                required
+              />
+            </FormGroup>
 
+            <FormGroup>
+              <label>
+              Cantidad:
+              </label>
+              <input
+                className="form-control"
+                name="Cantidad"
+                type="text"
+                onChange={handleChange}
+                value={venta.form.Cantidad}
+                required
+              />
+            </FormGroup>
 
+            <FormGroup>
+              <label>
+              Valor:
+              </label>
+              <input
+                className="form-control"
+                name="Valor"
+                type="text"
+                onChange={handleChange}
+                value={venta.form.Valor}
+                required
+              />
+            </FormGroup>
+          </ModalBody>
 
-
-
-          <FormGroup>
-            <label>Producto:</label>
-            <input
-              className="form-control"
-              name="Producto"
-              type="text"
-              onChange={handleChange}
-              value={venta.form.Producto}
-            />
-          </FormGroup>
-
-
-          <FormGroup>
-            <label>Cantidad Producto:</label>
-            <input
-              className="form-control"
-              name="Cantidad"
-              type="number"
-              onChange={handleChange}
-              value={venta.form.Cantidad}
-            />
-          </FormGroup>
-
-          <FormGroup>
-            <label>Precio:</label>
-            <input
-              className="form-control"
-              name="Precio"
-              type="number"
-              onChange={handleChange}
-              value={venta.form.Precio}
-            />
-          </FormGroup>
-
-          <FormGroup>
-            <label>Valor:</label>
-            <input
-              className="form-control"
-              name="Valor"
-              type="number"
-              onChange={handleChange}
-              value={venta.form.Valor}
-            />
-          </FormGroup>
-
-          <FormGroup>
-            <label>Id_Cliente:</label>
-            <input
-              className="form-control"
-              name="Id_Cliente"
-              type="text"
-              onChange={handleChange}
-              value={venta.form.Id_Cliente}
-            />
-          </FormGroup>
-
-          <FormGroup>
-            <label>Cliente:</label>
-            <input
-              className="form-control"
-              name="Cliente"
-              type="text"
-              onChange={handleChange}
-              value={venta.form.Cliente}
-            />
-          </FormGroup>
-
-          <FormGroup>
-            <label>Vendedor:</label>
-            <input
-              className="form-control"
-              name="Vendedor"
-              type="text"
-              onChange={handleChange}
-              value={venta.form.Vendedor}
-            />
-          </FormGroup>
-
-        </ModalBody>
-
-        <ModalFooter>
-          <Button color="primary" onClick={editar}>Actualizar</Button>
-          <Button color="info" onClick={cerrarModalActualizar}>Cancelar</Button>
-        </ModalFooter>
-      </Modal>
-
-
-
-      <Modal isOpen={modalInsertar}>
-        <ModalHeader>
-          <div><h3>Insertar Venta</h3></div>
-        </ModalHeader>
-
-        <ModalBody>
-
-          <FormGroup>
-            <label>Factura:</label>
-            <input
-              className="form-control"
-              name="Factura"
-              type="text"
-              onChange={handleChange}
-              required
-            />
-          </FormGroup>
-
-
-          <FormGroup>
-            <label> Fecha:</label>
-            <input
-              className="form-control"
-              name="Fecha"
-              type="text"
-              onChange={handleChange}
-            />
-          </FormGroup>
-
-          <FormGroup>
-            <label>Producto:</label>
-            <input
-              className="form-control"
-              name="Producto"
-              type="text"
-              onChange={handleChange}
-            />
-          </FormGroup>
+          <ModalFooter>
+            <Button color="danger" onClick={eliminar1}>Eliminar</Button>
+            <Button
+              color="primary"
+              onClick={editar}
+            >
+              Actualizar
+            </Button>
+            <Button
+              className="btn btn-danger"
+              onClick={cerrarModalActualizar}
+            >
+              Cancelar
+            </Button>
+          </ModalFooter>
+        </Modal>
 
 
 
+        <Modal isOpen={modalInsertar}>
+          <ModalHeader>
+            <div><h3>Insertar Venta</h3></div>
+          </ModalHeader>
 
-          <FormGroup>
-            <label>Cantidad:</label>
-            <input
-              className="form-control"
-              name="Cantidad"
-              type="text"
-              onChange={handleChange}
-            />
-          </FormGroup>
+          <ModalBody>
+            <FormGroup>
+              <label>
+              Fecha:
+              </label>
+              <input
+                className="form-control"
+                name="Fecha"
+                type="text"
+                onChange={handleChange}
+                required
+              />
+            </FormGroup>
 
-          <FormGroup>
-            <label>Precio:</label>
-            <input
-              className="form-control"
-              name="Precio"
-              type="text"
-              onChange={handleChange}
-            />
-          </FormGroup>
+            <FormGroup>
+              <label>
+              Factura:
+              </label>
+              <input
+                className="form-control"
+                name="Factura"
+                type="text"
+                onChange={handleChange}
+                required
+              />
+            </FormGroup>
 
-          <FormGroup>
-            <label>Valor:</label>
-            <input
-              className="form-control"
-              name="Valor"
-              type="text"
-              onChange={handleChange}
-            />
-          </FormGroup>
+            <FormGroup>
+              <label>
+              Vendedor:
+              </label>
+              <input
+                className="form-control"
+                name="Vendedor"
+                type="text"
+                onChange={handleChange}
+                required
+              />
+            </FormGroup>
 
-          <FormGroup>
-            <label>Id_Cliente:</label>
-            <input
-              className="form-control"
-              name="Id_Cliente"
-              type="text"
-              onChange={handleChange}
-            />
-          </FormGroup>
+            <FormGroup>
+              <label>
+              Id_Cliente:
+              </label>
+              <input
+                className="form-control"
+                name="Id_Cliente"
+                type="text"
+                onChange={handleChange}
+                required
+              />
+            </FormGroup>
 
-          <FormGroup>
-            <label>Cliente:</label>
-            <input
-              className="form-control"
-              name="Cliente"
-              type="text"
-              onChange={handleChange}
-            />
-          </FormGroup>
+            <FormGroup>
+              <label>
+              Cliente:
+              </label>
+              <input
+                className="form-control"
+                name="Cliente"
+                type="text"
+                onChange={handleChange}
+                required
+              />
+            </FormGroup>
 
-          <FormGroup>
-            <label>Vendedor:</label>
-            <input
-              className="form-control"
-              name="Vendedor"
-              type="text"
-              onChange={handleChange}
-            />
-          </FormGroup>
+            <FormGroup>
+              <label>
+              Producto:
+              </label>
+              <input
+                className="form-control"
+                name="Producto"
+                type="text"
+                onChange={handleChange}
+                required
+              />
+            </FormGroup>
 
-        </ModalBody>
-        <ModalFooter>
-          <Button color="primary" onClick={insertar}>Insertar</Button>
-          <Button color="info" onClick={cerrarModalInsertar}>Cancelar</Button>
-        </ModalFooter>
-      </Modal>
-    </>
-  );
+            <FormGroup>
+              <label>
+              Precio:
+              </label>
+              <input
+                className="form-control"
+                name="Precio"
+                type="text"
+                onChange={handleChange}
+                required
+              />
+            </FormGroup>
 
+            <FormGroup>
+              <label>
+              Cantidad:
+              </label>
+              <input
+                className="form-control"
+                name="Cantidad"
+                type="text"
+                onChange={handleChange}
+                required
+              />
+            </FormGroup>
+
+            <FormGroup>
+              <label>
+              Valor:
+              </label>
+              <input
+                className="form-control"
+                name="Valor"
+                type="text"
+                onChange={handleChange}
+              />
+            </FormGroup>
+          </ModalBody>
+
+          <ModalFooter>
+            <Button color="primary" onClick={insertar}>Insertar</Button>
+            <Button className="btn btn-danger" onClick={cerrarModalInsertar}>Cancelar</Button>
+          </ModalFooter>
+        </Modal>
+      </>
+    );
+  }
 }
 export default Ventas;
-
-
-
