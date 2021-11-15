@@ -52,7 +52,6 @@ const User = () => {
   React.useEffect(() => {
     if (!user) return history.replace("/");
     user.getIdToken(true).then(token => {
-      sessionStorage.setItem('token', token);
       const requestOptions = {
         method: 'GET',
         headers: {
