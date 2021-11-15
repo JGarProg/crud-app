@@ -18,6 +18,7 @@ import {
 } from "reactstrap";
 import Tablero from '../Tablero';
 
+
 const data = [];
 const BASE_URL = process.env.REACT_APP_API_BASE_URL;
 const PATH_SALES = process.env.REACT_APP_API_SALES_PATH;
