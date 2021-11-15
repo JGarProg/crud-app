@@ -93,15 +93,15 @@ const Ventas = () => {
 
   const mostrarModalActualizar = (e) => {
     let arregloVentas = venta.data;
-    let saleToModify;
+    let saltToModify;
     arregloVentas.map((registro) => {
       if (e.target.id === registro._id) {
-        saleToModify = registro;
+        saltToModify = registro;
       }
     });
     setVenta({
       ...venta,
-      form: saleToModify
+      form: saltToModify
     });
     setModalActualizar(true);
   };
@@ -210,7 +210,7 @@ const Ventas = () => {
   const mostrarModalBuscar = () => {
     let arregloVentas = venta.data;
     let db = document.getElementById('buscar').value;
-    let saleToModify;
+    let saltToModify;
     let Factura = db;
     user.getIdToken(true).then(token => {
       const requestOptions = {
@@ -226,10 +226,10 @@ const Ventas = () => {
           (result) => {
             arregloVentas.map((registro) => {
               if (db === registro.Factura) {
-                saleToModify = registro;             
+                saltToModify = registro;             
                 setVenta({
                   ...venta,
-                  form: saleToModify
+                  form: saltToModify
                 });
                 setModalActualizar(true);
               //}else{
