@@ -297,30 +297,30 @@ const Ventas = () => {
         <Table>
           <thead>
             <tr>
-            <th>Fecha</th>
-                <th>Factura</th>
-                <th>Vendedor</th>
-                <th>Id_Cliente</th>
-                <th>Cliente</th>
-                <th>Producto</th>            
-                <th>Precio</th>
-                <th>Cantidad</th>
-                <th>Valor</th>
+              <th>Fecha</th>
+              <th>Factura</th>
+              <th>Vendedor</th>
+              <th>Id_Cliente</th>
+              <th>Cliente</th>
+              <th>Producto</th>            
+              <th>Precio</th>
+              <th>Cantidad</th>
+              <th>Valor</th>
             </tr>
           </thead>
 
           <tbody>
             {venta.data.map((dato) => (
               <tr key={dato._id}>
-                  <td>{dato.Fecha}</td>
-                  <td>{dato.Factura}</td>
-                  <td>{dato.Vendedor}</td>
-                  <td>{dato.Id_Cliente}</td>
-                  <td>{dato.Cliente}</td>
-                  <td>{dato.Producto}</td>
-                  <td>{dato.Precio}</td>
-                  <td>{dato.Cantidad}</td>
-                  <td>{dato.Valor}</td>
+                <td>{dato.Fecha}</td>
+                <td>{dato.Factura}</td>
+                <td>{dato.Vendedor}</td>
+                <td>{dato.Id_Cliente}</td>
+                <td>{dato.Cliente}</td>
+                <td>{dato.Producto}</td>
+                <td>{dato.Precio}</td>
+                <td>{dato.Cantidad}</td>
+                <td>{dato.Valor}</td>
                 <td>
                   <Button id={dato._id} color="primary" onClick={mostrarModalActualizar}>Editar</Button>{" "}
                   <Button id={dato._id} color="danger" onClick={eliminar}>Eliminar</Button>
@@ -461,6 +461,7 @@ const Ventas = () => {
               type="text"
               onChange={handleChange}
               value={venta.form.Valor}
+              required
             />
           </FormGroup>
         </ModalBody>
@@ -577,7 +578,7 @@ const Ventas = () => {
               name="Precio"
               type="text"
               onChange={handleChange}
-              
+              required              
             />
           </FormGroup>
 
