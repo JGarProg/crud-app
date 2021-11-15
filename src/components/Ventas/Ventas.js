@@ -1,4 +1,8 @@
 import React from 'react';
+import { useAuthState } from "react-firebase-hooks/auth";
+import { Link, useHistory } from "react-router-dom";
+import { getAuth, GoogleAuthProvider, signInWithEmailAndPassword, signInWithPopup } from "firebase/auth";
+
 import {
   Table,
   Button,
@@ -9,34 +13,37 @@ import {
   FormGroup,
   ModalFooter,
 } from "reactstrap";
+import Tablero from '../Tablero';
 
 const data = [
 ];
 
 const BASE_URL = process.env.REACT_APP_API_BASE_URL;
-const PATH_VENTAS = process.env.REACT_APP_API_VENTAS_PATH;
+const PATH_SALES = process.env.REACT_APP_API_SALES_PATH;
 
 const Ventas = () => {
 
-
+  const auth = getAuth();
   const [modalActualizar, setModalActualizar] = React.useState(false);
   const [modalInsertar, setModalInsertar] = React.useState(false);
   const [errors, setErrors] = React.useState(null);
   const [newVal, setNewVal] = React.useState(0);
+  const [user, loading, error] = useAuthState(auth);
+  const history = useHistory();
 
 
   const [venta, setVenta] = React.useState({
     data: data,
     form: {
-      idVenta: "",
-      fechaVenta: "",
-      idProducto: "",
-      cantidadProducto: "",
-      precioUnitario: "",
-      valorTotal: "",
-      documentoCliente: "",
-      nombreCliente: "",
-      idVendedor: ""
+      Factura: "",
+      Fecha: "",
+      Producto: "",
+      Cantidad: "",
+      Precio: "",
+      Valor: "",
+      Id_Cliente: "",
+      Cliente: "",
+      Vendedor: ""
 
     }
   });
@@ -58,23 +65,28 @@ const Ventas = () => {
 
 
 
-
+  React.useEffect(() => {
+    if (loading) return;
+    if (!user) return history.replace("/");
+  }, [user, loading]);
 
 
 
 
   React.useEffect(() => {
-
+    if (!user) return history.replace("/");
+    user.getIdToken(true).then(token => {
 
     const requestOptions = {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
 
       },
     };
 
-    fetch(`${BASE_URL}${PATH_VENTAS}`, requestOptions)
+    fetch(`${BASE_URL}${PATH_SALES}`, requestOptions)
       .then(res => res.json())
       .then(
         (result) => {
@@ -89,7 +101,7 @@ const Ventas = () => {
           //setErrors(error);
         }
       )
-
+    });
   }, [newVal]);
 
   const handleChange = (e) => {
@@ -140,7 +152,7 @@ const Ventas = () => {
     let arregloVentas = venta.data;
     arregloVentas.map((registro) => {
       if (e.target.id === registro._id) {
-        let opcion = window.confirm("¿Está seguro que desea eliminar la venta " + registro.idVenta + "?");
+        let opcion = window.confirm("¿Está seguro que desea eliminar la venta " + registro.Factura + "?");
         if (opcion) {
           borrarVenta(registro._id);
         }
@@ -160,7 +172,7 @@ const Ventas = () => {
       },
       body: JSON.stringify(ventaACrear)
     };
-    fetch(`${BASE_URL}${PATH_VENTAS}`, requestOptions)
+    fetch(`${BASE_URL}${PATH_SALES}`, requestOptions)
       .then(
         (response) => {
           response.json();
@@ -181,7 +193,7 @@ const Ventas = () => {
         'Content-Type': 'application/json',
       },
     };
-    fetch(`${BASE_URL}${PATH_VENTAS}/${id}`, requestOptions)
+    fetch(`${BASE_URL}${PATH_SALES}/${id}`, requestOptions)
       .then(result => result.json())
       .then(
         (result) => {
@@ -203,7 +215,7 @@ const Ventas = () => {
       },
       body: JSON.stringify(venta)
     };
-    fetch(`${BASE_URL}${PATH_VENTAS}/${venta._id}`, requestOptions)
+    fetch(`${BASE_URL}${PATH_SALES}/${venta._id}`, requestOptions)
       .then(result => result.json())
       .then(
         (result) => {
@@ -218,7 +230,7 @@ const Ventas = () => {
   return (
 
     <>
-
+      <Tablero/>
       <Container>
 
         <br />
@@ -232,15 +244,15 @@ const Ventas = () => {
 
             <thead>
               <tr>
-                <th>Id Venta</th>
-                <th>Fecha Venta</th>
-                <th>Id Producto</th>
-                <th>Cantidad Producto</th>
-                <th>Precio Unitario</th>
-                <th>Valor Total</th>
-                <th>Documento Cliente</th>
-                <th>Nombre Cliente</th>
-                <th>Id Vendedor</th>
+                <th>Venta</th>
+                <th>Fecha</th>
+                <th>Producto</th>
+                <th>Cantidad</th>
+                <th>Precio</th>
+                <th>Valor</th>
+                <th>Id_Cliente</th>
+                <th>Cliente</th>
+                <th>Vendedor</th>
                 <th>Acción</th>
               </tr>
             </thead>
@@ -249,15 +261,15 @@ const Ventas = () => {
 
               {venta.data.map((dato) => (
                 <tr key={dato._id}>
-                  <td>{dato.idVenta}</td>
-                  <td>{dato.fechaVenta}</td>
-                  <td>{dato.idProducto}</td>
-                  <td>{dato.cantidadProducto}</td>
-                  <td>{dato.precioUnitario}</td>
-                  <td>{dato.valorTotal}</td>
-                  <td>{dato.documentoCliente}</td>
-                  <td>{dato.nombreCliente}</td>
-                  <td>{dato.idVendedor}</td>
+                  <td>{dato.Factura}</td>
+                  <td>{dato.Fecha}</td>
+                  <td>{dato.Producto}</td>
+                  <td>{dato.Cantidad}</td>
+                  <td>{dato.Precio}</td>
+                  <td>{dato.Valor}</td>
+                  <td>{dato.Id_Cliente}</td>
+                  <td>{dato.Cliente}</td>
+                  <td>{dato.Vendedor}</td>
                   <td>
                     <button
                       type="button"
@@ -289,19 +301,19 @@ const Ventas = () => {
 
       <Modal isOpen={modalActualizar}>
         <ModalHeader>
-          <div><h3>Actualizar Venta</h3> {venta.form.idVenta}</div>
+          <div><h3>Actualizar Venta</h3> {venta.form.Factura}</div>
         </ModalHeader>
 
         <ModalBody>
 
           <FormGroup>
-            <label>Id Venta:</label>
+            <label>Factura:</label>
             <input
               className="form-control"
-              name="idVenta"
+              name="Factura"
               type="text"
               onChange={handleChange}
-              value={venta.form.idVenta}
+              value={venta.form.Factura}
             />
           </FormGroup>
 
@@ -309,10 +321,10 @@ const Ventas = () => {
             <label>Fecha Venta:</label>
             <input
               className="form-control"
-              name="fechaVenta"
+              name="Fecha"
               type="text"
               onChange={handleChange}
-              value={venta.form.fechaVenta}
+              value={venta.form.Fecha}
             />
           </FormGroup>
 
@@ -322,13 +334,13 @@ const Ventas = () => {
 
 
           <FormGroup>
-            <label>Id Producto:</label>
+            <label>Producto:</label>
             <input
               className="form-control"
-              name="idProducto"
+              name="Producto"
               type="text"
               onChange={handleChange}
-              value={venta.form.idProducto}
+              value={venta.form.Producto}
             />
           </FormGroup>
 
@@ -337,65 +349,65 @@ const Ventas = () => {
             <label>Cantidad Producto:</label>
             <input
               className="form-control"
-              name="cantidadProducto"
+              name="Cantidad"
               type="number"
               onChange={handleChange}
-              value={venta.form.cantidadProducto}
+              value={venta.form.Cantidad}
             />
           </FormGroup>
 
           <FormGroup>
-            <label>Precio Unitario:</label>
+            <label>Precio:</label>
             <input
               className="form-control"
-              name="precioUnitario"
+              name="Precio"
               type="number"
               onChange={handleChange}
-              value={venta.form.precioUnitario}
+              value={venta.form.Precio}
             />
           </FormGroup>
 
           <FormGroup>
-            <label>Valor Total:</label>
+            <label>Valor:</label>
             <input
               className="form-control"
-              name="valorTotal"
+              name="Valor"
               type="number"
               onChange={handleChange}
-              value={venta.form.valorTotal}
+              value={venta.form.Valor}
             />
           </FormGroup>
 
           <FormGroup>
-            <label>Documento Cliente:</label>
+            <label>Id_Cliente:</label>
             <input
               className="form-control"
-              name="documentoCliente"
+              name="Id_Cliente"
               type="text"
               onChange={handleChange}
-              value={venta.form.documentoCliente}
+              value={venta.form.Id_Cliente}
             />
           </FormGroup>
 
           <FormGroup>
-            <label>Nombre Cliente:</label>
+            <label>Cliente:</label>
             <input
               className="form-control"
-              name="nombreCliente"
+              name="Cliente"
               type="text"
               onChange={handleChange}
-              value={venta.form.nombreCliente}
+              value={venta.form.Cliente}
             />
           </FormGroup>
 
           <FormGroup>
-            <label>Id Vendedor:</label>
+            <label>Vendedor:</label>
             <input
               className="form-control"
-              name="idVendedor"
+              name="Vendedor"
               type="text"
               onChange={handleChange}
-              value={venta.form.idVendedor}
+              value={venta.form.Vendedor}
             />
           </FormGroup>
 
@@ -417,10 +429,10 @@ const Ventas = () => {
         <ModalBody>
 
           <FormGroup>
-            <label>Id Venta:</label>
+            <label>Factura:</label>
             <input
               className="form-control"
-              name="idVenta"
+              name="Factura"
               type="text"
               onChange={handleChange}
               required
@@ -429,20 +441,20 @@ const Ventas = () => {
 
 
           <FormGroup>
-            <label> Fecha Venta:</label>
+            <label> Fecha:</label>
             <input
               className="form-control"
-              name="fechaVenta"
+              name="Fecha"
               type="text"
               onChange={handleChange}
             />
           </FormGroup>
 
           <FormGroup>
-            <label>idProducto:</label>
+            <label>Producto:</label>
             <input
               className="form-control"
-              name="idProducto"
+              name="Producto"
               type="text"
               onChange={handleChange}
             />
@@ -452,60 +464,60 @@ const Ventas = () => {
 
 
           <FormGroup>
-            <label>Cantidad Producto:</label>
+            <label>Cantidad:</label>
             <input
               className="form-control"
-              name="cantidadProducto"
+              name="Cantidad"
               type="text"
               onChange={handleChange}
             />
           </FormGroup>
 
           <FormGroup>
-            <label>Precio Unitario:</label>
+            <label>Precio:</label>
             <input
               className="form-control"
-              name="precioUnitario"
+              name="Precio"
               type="text"
               onChange={handleChange}
             />
           </FormGroup>
 
           <FormGroup>
-            <label>Valor Total:</label>
+            <label>Valor:</label>
             <input
               className="form-control"
-              name="valorTotal"
+              name="Valor"
               type="text"
               onChange={handleChange}
             />
           </FormGroup>
 
           <FormGroup>
-            <label>Documento Cliente:</label>
+            <label>Id_Cliente:</label>
             <input
               className="form-control"
-              name="documentoCliente"
+              name="Id_Cliente"
               type="text"
               onChange={handleChange}
             />
           </FormGroup>
 
           <FormGroup>
-            <label>Nombre Cliente:</label>
+            <label>Cliente:</label>
             <input
               className="form-control"
-              name="nombreCliente"
+              name="Cliente"
               type="text"
               onChange={handleChange}
             />
           </FormGroup>
 
           <FormGroup>
-            <label>Id Vendedor:</label>
+            <label>Vendedor:</label>
             <input
               className="form-control"
-              name="idVendedor"
+              name="Vendedor"
               type="text"
               onChange={handleChange}
             />
